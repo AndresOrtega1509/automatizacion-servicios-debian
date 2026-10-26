@@ -1,0 +1,57 @@
+{{template "top" .}}
+<div class="page-head">
+<div><span class="eyebrow">MÓDULO 3</span><h1>Gestión de servicios con systemd</h1></div>
+<a href="/">← Volver</a>
+</div>
+
+{{if .Message}}
+<div class="alert {{if .Success}}ok{{else}}error{{end}}">
+<strong>{{.Message}}</strong>
+{{if .Technical}}<details open><summary>Detalle técnico</summary><pre>{{.Technical}}</pre></details>{{end}}
+</div>
+{{end}}
+
+<section class="grid two">
+<article>
+<h2>Preparar servicio de prueba</h2>
+<p>Instala un script que agrega fecha y hora a <strong>/var/log/np2-fecha.log</strong> cada vez que systemd lo ejecuta.</p>
+
+<form method="post" action="/servicios/prepare">
+<label>IP de la VM</label>
+<input name="ssh_ip" value="192.168.1.45" required>
+
+<label>Llave privada de root</label>
+<input name="ssh_key" value="C:\Users\ANDRES ORTEGA\Downloads\np2-root-ed25519" required>
+
+<button type="submit">Instalar script y servicio</button>
+</form>
+
+<p class="note">Archivos creados: /usr/local/bin/np2-fecha.sh y /etc/systemd/system/np2-fecha.service.</p>
+</article>
+
+<article>
+<h2>Control del servicio</h2>
+<form method="post" action="/servicios/action">
+<label>IP de la VM</label>
+<input name="ssh_ip" value="192.168.1.45" required>
+
+<label>Llave privada de root</label>
+<input name="ssh_key" value="C:\Users\ANDRES ORTEGA\Downloads\np2-root-ed25519" required>
+
+<label>Servicio</label>
+<input name="service_name" value="{{if .ServiceName}}{{.ServiceName}}{{else}}np2-fecha.service{{end}}" required>
+
+<div class="actions">
+<button name="action" value="start">Start</button>
+<button name="action" value="stop">Stop</button>
+<button name="action" value="restart">Restart</button>
+<button name="action" value="status">Status</button>
+<button name="action" value="enable">Enable</button>
+<button name="action" value="disable">Disable</button>
+</div>
+</form>
+
+<p class="warning">Start ejecuta el script una vez. Restart vuelve a ejecutarlo y agrega una nueva línea al archivo de log.</p>
+</article>
+</section>
+{{template "bottom" .}}

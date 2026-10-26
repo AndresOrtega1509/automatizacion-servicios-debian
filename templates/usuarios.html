@@ -1,0 +1,96 @@
+{{template "top" .}}
+<div class="page-head">
+<div><span class="eyebrow">MÓDULO 2</span><h1>Gestión de usuarios</h1></div>
+<a href="/">← Volver</a>
+</div>
+
+{{if .Message}}
+<div class="alert {{if .Success}}ok{{else}}error{{end}}">
+<strong>{{.Message}}</strong>
+{{if .Technical}}<details open><summary>Detalle técnico</summary><pre>{{.Technical}}</pre></details>{{end}}
+</div>
+{{end}}
+
+<section class="grid two">
+<article>
+<h2>Crear usuario</h2>
+<form method="post" action="/usuarios/create">
+<label>IP de la VM</label>
+<input name="ssh_ip" value="192.168.1.45" required>
+
+<label>Llave privada de root</label>
+<input name="ssh_key" value="C:\Users\ANDRES ORTEGA\Downloads\np2-root-ed25519" required>
+
+<label>Nombre de usuario</label>
+<input name="username" placeholder="ej. prueba01" required>
+
+<label>Contraseña inicial</label>
+<input name="user_password" type="password" placeholder="Opcional si genera llave SSH">
+
+<label class="check"><input type="checkbox" name="with_sudo"> Asignar privilegios de sudo</label>
+<label class="check"><input type="checkbox" name="with_ssh"> Generar par de llaves SSH</label>
+
+<button type="submit">Crear usuario</button>
+</form>
+
+{{if .UserKeyReady}}
+<div class="ssh-ready">
+<strong>Llave SSH disponible</strong>
+<span>Usuario: {{.UserKeyName}}</span>
+<a class="btn secondary-link" href="/usuarios/key/download?user={{.UserKeyName}}">Descargar llave privada</a>
+</div>
+{{end}}
+
+<p class="warning">Si habilita SSH, la aplicación deshabilita la autenticación por contraseña para ese usuario y deja acceso por llave pública.</p>
+</article>
+
+<article>
+<h2>Eliminar usuario</h2>
+
+<form method="post" action="/usuarios/load" class="load-users-form">
+<label>IP de la VM</label>
+<input name="ssh_ip" value="192.168.1.45" required>
+
+<label>Llave privada de root</label>
+<input name="ssh_key" value="C:\Users\ANDRES ORTEGA\Downloads\np2-root-ed25519" required>
+
+<button type="submit">Cargar / actualizar usuarios</button>
+</form>
+
+<hr>
+
+<form method="post" action="/usuarios/delete">
+<label>IP de la VM</label>
+<input name="ssh_ip" value="192.168.1.45" required>
+
+<label>Llave privada de root</label>
+<input name="ssh_key" value="C:\Users\ANDRES ORTEGA\Downloads\np2-root-ed25519" required>
+
+<label>Usuario a eliminar</label>
+
+{{if .Users}}
+<select name="username_delete" required>
+<option value="">Seleccione un usuario</option>
+{{range .Users}}
+<option value="{{.}}">{{.}}</option>
+{{end}}
+</select>
+{{else}}
+<select name="username_delete" disabled>
+<option>No hay usuarios cargados</option>
+</select>
+{{end}}
+
+<label class="check"><input type="checkbox" name="remove_files"> Eliminar también todos sus archivos</label>
+
+{{if .Users}}
+<button class="danger" type="submit">Eliminar usuario</button>
+{{else}}
+<button class="danger" type="submit" disabled>Eliminar usuario</button>
+{{end}}
+</form>
+
+<p class="note">Por seguridad, root y andres están protegidos contra eliminación desde la consola.</p>
+</article>
+</section>
+{{template "bottom" .}}

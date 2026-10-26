@@ -1,0 +1,101 @@
+{{template "top" .}}
+<div class="page-head">
+<div><span class="eyebrow">MÓDULO 1</span><h1>Preparación del sistema</h1></div>
+<a href="/">← Volver</a>
+</div>
+
+{{if .Message}}
+<div class="alert {{if .Success}}ok{{else}}error{{end}}">
+<strong>{{.Message}}</strong>
+{{if .Technical}}<details open><summary>Detalle técnico</summary><pre>{{.Technical}}</pre></details>{{end}}
+</div>
+{{end}}
+
+<section class="grid">
+<article>
+<h2>Instalar o eliminar aplicación</h2>
+<p>La operación se ejecuta en <strong>{{.VMName}}</strong> mediante Guest Additions.</p>
+
+<form method="post">
+<label>Nombre del paquete</label>
+<input name="package" value="{{.Package}}" placeholder="Ej. tree, curl, nginx" autocomplete="off" required>
+
+<label>Contraseña de root de la VM</label>
+<input name="root_password" type="password" placeholder="No se almacena" required>
+<p class="note">La contraseña se usa únicamente durante la operación y se guarda en un archivo temporal que se elimina al finalizar.</p>
+
+<div class="actions">
+<button formaction="/preparacion/install">Instalar</button>
+<button class="danger" formaction="/preparacion/remove">Eliminar</button>
+</div>
+</form>
+</article>
+
+<article>
+<h2>Llaves SSH de root</h2>
+<p>Genera un par ED25519, autoriza la llave pública y evita que <strong>root</strong> se autentique por contraseña.</p>
+
+<form method="post" action="/preparacion/ssh/generate">
+<label>Contraseña actual de root</label>
+<input name="root_password" type="password" placeholder="Se usa solo durante esta operación" required>
+<button type="submit">Generar y configurar llaves SSH</button>
+</form>
+
+{{if .SSHReady}}
+<div class="ssh-ready">
+<strong>SSH por llave configurado</strong>
+{{if .RootTargetIP}}<span>Destino: root@{{.RootTargetIP}}</span>{{end}}
+<a class="btn secondary-link" href="/preparacion/ssh/download">Descargar llave privada</a>
+</div>
+{{else}}
+<button disabled>Descargar llave privada</button>
+{{end}}
+
+<p class="warning">La llave privada permite autenticarse como root. Guárdela en un lugar seguro, no la comparta y elimine copias innecesarias.</p>
+</article>
+
+<article>
+<h2>Personalizar /etc/issue</h2>
+<p>Desde este punto la operación se realiza por <strong>SSH con llave</strong>.</p>
+
+<form method="post" action="/preparacion/issue">
+<label>IP de NP2-Pruebas</label>
+<input name="ssh_ip" value="{{if .RootTargetIP}}{{.RootTargetIP}}{{else}}192.168.1.45{{end}}" placeholder="192.168.1.45" required>
+
+<label>Ruta de la llave privada en Windows</label>
+<input name="ssh_key" value="C:\Users\ANDRES ORTEGA\Downloads\np2-root-ed25519" placeholder="C:\ruta\np2-root-ed25519" required>
+
+<label class="check"><input type="checkbox" name="show_hostname" checked> Nombre del host</label>
+<label class="check"><input type="checkbox" name="show_date" checked> Fecha actual</label>
+<label class="check"><input type="checkbox" name="show_time" checked> Hora actual</label>
+<label class="check"><input type="checkbox" name="show_ip" checked> Dirección IP</label>
+
+<label>Mensaje personalizado</label>
+<input name="issue_message" placeholder="Bienvenido al servidor NP2">
+
+<button type="submit">Aplicar configuración</button>
+</form>
+<p class="note">La aplicación genera el contenido de /etc/issue y lo escribe en Debian mediante SSH.</p>
+</article>
+
+<article>
+<h2>Hostname y /etc/hosts</h2>
+<p>Cambia el nombre del sistema y mantiene sincronizada la entrada local en <strong>/etc/hosts</strong>.</p>
+
+<form method="post" action="/preparacion/hostname">
+<label>IP de NP2-Pruebas</label>
+<input name="ssh_ip" value="{{if .RootTargetIP}}{{.RootTargetIP}}{{else}}192.168.1.45{{end}}" placeholder="192.168.1.45" required>
+
+<label>Ruta de la llave privada</label>
+<input name="ssh_key" value="C:\Users\ANDRES ORTEGA\Downloads\np2-root-ed25519" placeholder="C:\ruta\np2-root-ed25519" required>
+
+<label>Nuevo hostname</label>
+<input name="new_hostname" placeholder="ej. np2-pruebas-web" maxlength="63" required>
+
+<button type="submit">Aplicar cambios</button>
+</form>
+
+<p class="note">La aplicación usa hostnamectl y actualiza la línea 127.0.1.1 de /etc/hosts.</p>
+</article>
+</section>
+{{template "bottom" .}}

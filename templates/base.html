@@ -1,0 +1,35 @@
+{{define "top"}}<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{.Title}}</title>
+<link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<header>
+  <div>
+    <b>☁ Consola de automatización de servicios</b>
+    <small>Computación en la nube · Parcial II</small>
+  </div>
+  <div class="vm">
+    <strong>{{.VMName}}</strong>
+    <span>{{.VMIP}}</span>
+  </div>
+</header>
+<nav>
+<a href="/">Inicio</a>
+<a href="/preparacion">Preparación</a>
+<a href="/usuarios">Usuarios</a>
+<a href="/servicios">Servicios</a>
+<a href="/haproxy">HAProxy</a>
+</nav>
+<main>
+{{end}}
+
+{{define "bottom"}}
+</main>
+<footer>Universidad del Quindío · Ingeniería de Sistemas y Computación</footer>
+</body>
+</html>
+{{end}}

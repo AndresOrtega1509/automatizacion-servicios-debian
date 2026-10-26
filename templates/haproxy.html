@@ -1,0 +1,72 @@
+{{template "top" .}}
+<div class="page-head">
+<div><span class="eyebrow">MÓDULO 4</span><h1>Gestión de HAProxy</h1></div>
+<a href="/">← Volver</a>
+</div>
+
+{{if .Message}}
+<div class="alert {{if .Success}}ok{{else}}error{{end}}">
+<strong>{{.Message}}</strong>
+{{if .Technical}}<details open><summary>Detalle técnico</summary><pre>{{.Technical}}</pre></details>{{end}}
+</div>
+{{end}}
+
+<section class="grid two">
+<article>
+<h2>Agregar servidor al backend</h2>
+<form method="post" action="/haproxy/add">
+<label>IP de NP2-HAProxy</label>
+<input name="haproxy_ip" value="{{.HAProxyIP}}" placeholder="ej. 192.168.1.46" required>
+
+<label>Llave privada de root</label>
+<input name="ssh_key" value="C:\Users\ANDRES ORTEGA\Downloads\np2-root-ed25519" required>
+
+<label>Backend</label>
+<input name="backend_name" value="{{if .BackendName}}{{.BackendName}}{{else}}np2_backend{{end}}" required>
+
+<label>Nombre del servidor</label>
+<input name="server_name" placeholder="backend01" required>
+
+<label>IP del servidor</label>
+<input name="server_ip" placeholder="192.168.1.50" required>
+
+<label>Puerto</label>
+<input name="server_port" value="8080" required>
+
+<button type="submit">Agregar servidor</button>
+</form>
+<p class="note">Se usa balance roundrobin y se valida la configuración antes de recargar HAProxy.</p>
+</article>
+
+<article>
+<h2>Eliminar o consultar servidor</h2>
+<form method="post" action="/haproxy/remove">
+<label>IP de NP2-HAProxy</label>
+<input name="haproxy_ip" value="{{.HAProxyIP}}" placeholder="ej. 192.168.1.46" required>
+
+<label>Llave privada de root</label>
+<input name="ssh_key" value="C:\Users\ANDRES ORTEGA\Downloads\np2-root-ed25519" required>
+
+<label>Backend</label>
+<input name="backend_name" value="{{if .BackendName}}{{.BackendName}}{{else}}np2_backend{{end}}" required>
+
+<label>Servidor a eliminar</label>
+<input name="server_name" placeholder="backend01" required>
+
+<button class="danger" type="submit">Eliminar servidor</button>
+</form>
+
+<hr>
+
+<form method="post" action="/haproxy/show">
+<input type="hidden" name="ssh_key" value="C:\Users\ANDRES ORTEGA\Downloads\np2-root-ed25519">
+<label>Consultar configuración actual</label>
+<input name="haproxy_ip" value="{{.HAProxyIP}}" placeholder="IP NP2-HAProxy" required>
+<input name="backend_name" value="{{if .BackendName}}{{.BackendName}}{{else}}np2_backend{{end}}" required>
+<button type="submit">Mostrar backend</button>
+</form>
+
+<p class="warning">Antes de recargar HAProxy se valida el archivo. Si la configuración queda inválida, se restaura la copia de seguridad.</p>
+</article>
+</section>
+{{template "bottom" .}}
